@@ -93,9 +93,11 @@ begin
     end if;
     if res != '' then
         insert into log(who, what, dateTime) VALUE (current_user, concat('Record updated in coches: ', res), now());
-        set total = (select sum(precio) from coches);
-        insert into log(who, what, dateTime) VALUE (current_user, concat('Update in coches, new total price of cars is: ', total), now());
-    end if;
+        if !(NEW.precio <=> OLD.precio) then
+            set total = (select sum(precio) from coches);
+            insert into log(who, what, dateTime) VALUE (current_user, concat('Update in coches, new total price of cars is: ', total), now());
+            end if;
+        end if;
 end;
 
 drop trigger if exists coches_ad;

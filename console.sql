@@ -68,3 +68,72 @@ select equipo.nomeq, avg(edad) from equipo inner join ciclista c on equipo.nomeq
     where c.edad > 25 and c.nomeq in (select equipo.nomeq from equipo inner join ciclista c2 on equipo.nomeq = c2.nomeq
                                                 where c2.edad>25
                                                 having count(c2.nomeq)>3);
+
+use test;
+
+drop procedure bucles;
+create procedure bucles(num int)
+begin
+    declare contador int default 0;
+
+# #     while - la condicion es contraria al repeat y loop, se ejecuta mientras se cumpla la condicion
+#     while contador <= num and contador > 50 do
+#         select contador;
+#         set contador = contador + 1;
+#     end while;
+
+# #     repeat - la condicion es la contraria al while, hay que decir hasta cuando se repite
+#     repeat
+#         select contador;
+#         set contador = contador + 1;
+#     until contador > num end repeat;
+
+#     loop - la condicion es la misma que la del repeat y contraria al while
+    bucle : loop
+        select contador;
+        set contador = contador + 1;
+        if contador > num then
+            leave bucle;
+        end if;
+    end loop;
+
+end;
+
+call bucles(10);
+
+use nation;
+
+drop procedure if exists filterNationalDay;
+create procedure filterNationalDay()
+begin
+    declare fin boolean default true;
+    declare tempId int(11);
+    declare tempName varchar(50);
+    declare tempNatDay date;
+
+    declare curs cursor for select country_id, name, national_day from countries where national_day is not null;
+    declare continue handler for not found
+    begin
+        select 'Se llego al fin de la tabla';
+        set fin = false;
+    end;
+
+    drop table if exists withNacDay;
+    create table withNacDay(
+        country_id int(11) primary key,
+        name varchar(50),
+        national_day date
+    );
+
+    open curs;
+    fetch curs into tempId, tempName, tempNatDay;
+
+    while fin do
+        insert into withNacDay values (tempId, tempName, tempNatDay);
+        fetch curs into tempId, tempName, tempNatDay;
+    end while;
+    close curs;
+
+end;
+
+call filterNationalDay();

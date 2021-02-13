@@ -33,3 +33,29 @@ end;
 call hoy(@fecha);
 select @fecha;
 
+use vueltaciclista;
+
+create function doblarEdad(edad int) returns int
+begin
+    return edad *2;
+end;
+
+select doblarEdad(edad) from ciclista;
+
+select datediff('2021-12-31', now());
+
+
+create procedure ejemplo(out arg1 int)
+begin 
+    set arg1 = datediff('2021-12-31', now())*24;
+end;
+
+create procedure ejemplo2()
+begin
+    declare minutos int;
+    call ejemplo(minutos);
+    set minutos = minutos * 60;
+    select minutos;
+end;
+
+call ejemplo2();

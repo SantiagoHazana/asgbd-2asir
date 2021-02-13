@@ -111,3 +111,21 @@ begin
 end;
 
 select timePassed('1995-08-06') as Tiempo_transcurrido;
+
+
+
+create function ecuSegGradoTieneRaices(a double, b double, c double) returns boolean
+begin
+    declare x1 double;
+    declare x2 double;
+    # llamo al procedimiento pasandole mis dos variables para que le asigne valor
+    call ecu_2grad(a, b, c, x1, x2);
+    if x1 is null and x2 is null then
+        return false;
+    else
+        return true;
+    end if;
+end;
+
+select ecuSegGradoTieneRaices(1, 2, -3); # me devuelve true(1)
+select ecuSegGradoTieneRaices(1, 2, 3); # me devuelve false(0)
